@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار المحاسبة - قيس طلال الجازي</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .quiz-container {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 750px;
+            padding: 40px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #1a5276;
+            margin-bottom: 5px;
+        }
+
+        .student-name {
+            color: #2c3e50;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin: 10px 0;
+            background-color: #e8f4f8;
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+        }
+
+        .header-info {
+            color: #7f8c8d;
+            font-size: 0.95em;
+            margin-bottom: 25px;
+            margin-top: 10px;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 15px;
+        }
+
+        .question-text {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-btn {
+            background-color: #ffffff;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 18px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Cairo', sans-serif;
+            text-align: right;
+            color: #34495e;
+            position: relative;
+        }
+
+        .option-btn:hover:not([disabled]) {
+            background-color: #f7f9fa;
+            border-color: #3498db;
+            transform: translateY(-2px);
+        }
+
+        .option-btn.correct {
+            background-color: #d1e7dd;
+            border-color: #198754;
+            color: #0f5132;
+        }
+
+        .option-btn.incorrect {
+            background-color: #f8d7da;
+            border-color: #dc3545;
+            color: #842029;
+        }
+
+        .feedback {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+            text-align: right;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .justification {
+            font-size: 0.95em;
+            margin-top: 8px;
+            color: #444;
+            background: rgba(255,255,255,0.5);
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .controls {
+            margin-top: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 2px solid #ecf0f1;
+            padding-top: 20px;
+        }
+
+        .next-btn {
+            background-color: #2980b9;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            font-family: 'Cairo', sans-serif;
+            display: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .next-btn:hover {
+            background-color: #1c5980;
+        }
+
+        .score-board {
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 1.2em;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background-color: #ecf0f1;
+            border-radius: 4px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="quiz-container">
+        <h1>اختبار مادة المحاسبة 1</h1>
+        <div class="student-name">إعداد الطالب: قيس طلال الجازي</div>
+        <div class="header-info">تغطية شاملة للصفحات 1-100 (الفصول 1، 2، 3، 4)</div>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress"></div>
+        </div>
+
+        <div id="quiz-content">
+            <div class="question-box">
+                <div class="question-text" id="question"></div>
+                <div class="options-container" id="options"></div>
+            </div>
+
+            <div class="feedback" id="feedback"></div>
+
+            <div class="controls">
+                <div class="score-board">النتيجة: <span id="score">0</span> / <span id="total">50</span></div>
+                <button class="next-btn" id="next-btn" onclick="nextQuestion()">السؤال التالي ⬅</button>
+            </div>
+        </div>
+        
+        <div id="result-screen" style="display: none;">
+            <h2 style="color: #2c3e50;">انتهى الاختبار!</h2>
+            <div style="font-size: 1.5em; margin: 20px 0;">نتيجتك: <span id="final-score" style="color: #2980b9;"></span> / 50</div>
+            <p id="message" style="font-size: 1.1em; color: #7f8c8d;"></p>
+            <button class="next-btn" style="display: inline-block; background-color: #27ae60;" onclick="location.reload()">إعادة الاختبار ↻</button>
+        </div>
+    </div>
+
+    <script>
+        // قاعدة بيانات الأسئلة (50 سؤال)
+        const questions = [
+            // --- الفصل الأول ---
+            { q: "عرّفت جمعية المحاسبة الأمريكية المحاسبة بأنها عملية:", options: ["تسجيل العمليات فقط", "تشخيص وقياس وإيصال المعلومات", "حساب الربح والخسارة", "مسك الدفاتر"], answer: 1, reason: "[ص 16] التعريف يشمل التشخيص والقياس والإيصال." },
+            { q: "الفرق الجوهري بين المحاسبة ومسك الدفاتر هو:", options: ["مسك الدفاتر أشمل", "المحاسبة علم وفن ومسك الدفاتر عمل روتيني", "لا يوجد فرق", "المحاسبة للتسجيل فقط"], answer: 1, reason: "[ص 17] مسك الدفاتر هو العمل الآلي، أما المحاسبة فهي أشمل ولها بعد علمي وفني." },
+            { q: "أول من وضع الأساس الواضح لمجموعة الدفاتر المحاسبية هو:", options: ["آدم سميث", "لوقا باتشيليو", "هنري فايول", "ديفيد ريكاردو"], answer: 1, reason: "[ص 18] لوقا باتشيليو جمع وفسر نظام القيد المزدوج ووضع أساس الدفاتر." },
+            { q: "أي الفئات التالية تعتبر من المستخدمين الداخليين للبيانات؟", options: ["المقرضون", "دائرة الضريبة", "إدارة المشروع", "العملاء"], answer: 2, reason: "[ص 20] إدارة المشروع والموظفون هم فئات داخلية." },
+            { q: "فرع المحاسبة الذي يهدف لتحديد تكلفة الإنتاج والرقابة عليها هو:", options: ["المحاسبة المالية", "المحاسبة الحكومية", "محاسبة التكاليف", "التدقيق"], answer: 2, reason: "[ص 22] محاسبة التكاليف تهتم بقياس تكلفة الإنتاج والرقابة عليها." },
+            { q: "فرض 'الوحدة المحاسبية المستقلة' يعني:", options: ["استمرار المشروع للأبد", "فصل شخصية المشروع عن مالكه", "استخدام النقد للقياس", "تقسيم حياة المشروع"], answer: 1, reason: "[ص 25] المشروع له شخصية معنوية مستقلة عن مالكيه." },
+            { q: "مبدأ 'الاستمرارية' (Going Concern) يفترض أن:", options: ["المشروع سيصفى قريباً", "المشروع مستمر في عملياته لأمد غير محدد", "حياة المشروع سنة واحدة", "الأصول تسجل بسعر السوق"], answer: 1, reason: "[ص 26] يفترض استمرار المشروع ما لم تظهر أدلة عكس ذلك." },
+            { q: "مبدأ 'مقابلة الإيرادات بالمصروفات' يتطلب:", options: ["الدفع النقدي حصراً", "تحميل الفترة بالمصاريف التي ساهمت في تحقيق إيراداتها", "تسجيل الإيراد دون مصروف", "تأجيل المصاريف للسنة القادمة"], answer: 1, reason: "[ص 27] يجب طرح المصاريف المستنفذة من الإيرادات المحققة في نفس الفترة." },
+            { q: "أساس الاستحقاق (Accrual Basis) يهتم بـ:", options: ["القبض والدفع النقدي فقط", "العمليات التي تخص الفترة سواء دفعت أم لا", "الإيرادات فقط", "المصاريف فقط"], answer: 1, reason: "[ص 28] يأخذ بالحسبان ما يخص الفترة بغض النظر عن القبض والدفع." },
+            { q: "مبدأ 'الحيطة والحذر' (التحفظ) يعني:", options: ["تجاهل الخسائر المتوقعة", "أخذ الخسائر المتوقعة بالحسبان وتجاهل الأرباح المتوقعة", "تسجيل الأرباح المتوقعة فوراً", "المبالغة في الأصول"], answer: 1, reason: "[ص 29] التحوط للخسائر وعدم استعجال الأرباح." },
+            { q: "مبدأ 'الثبات' (Consistency) يهدف إلى:", options: ["تغيير الطرق المحاسبية سنوياً", "تسهيل المقارنة بين الفترات المالية", "تعقيد الحسابات", "زيادة الأرباح"], answer: 1, reason: "[ص 28] تطبيق نفس الطرق يسمح بمقارنة النتائج من سنة لأخرى." },
+            { q: "أي مما يلي يعتبر من خصائص النظام المحاسبي الجيد؟", options: ["التعقيد", "الاقتصاد في النفقات والرقابة الداخلية", "عدم وجود مستندات", "تجاهل القوانين"], answer: 1, reason: "[ص 31] من الخصائص: الدقة، السرعة، الاقتصاد، والرقابة الداخلية." },
+            { q: "المشاريع الفردية هي التي:", options: ["يملكها شخص واحد", "يملكها شخصان فأكثر", "تطرح أسهمها للاكتتاب", "تكون مسؤوليتها محدودة"], answer: 0, reason: "[ص 33] المشروع الفردي يملكه شخص واحد ولا يعتبر وحدة قانونية مستقلة عن مالكه." },
+            { q: "علاقة المحاسبة بالقانون تظهر في:", options: ["تحديد الأسعار", "الالتزام بقانون الشركات والضريبة", "حساب الاحتمالات", "دراسة الجدوى"], answer: 1, reason: "[ص 23] المحاسبة تحكمها قوانين مثل قانون الشركات والتجارة." },
+            
+            // --- الفصل الثاني ---
+            { q: "العملية المالية هي التي:", options: ["تؤثر على الإدارة فقط", "تؤثر على مبالغ الحسابات ولها مستند مؤيد", "تتعلق بتعيين موظف جديد", "لا يمكن قياسها نقدياً"], answer: 1, reason: "[ص 41] يجب أن تؤثر على الحسابات ويكون لها قياس مادي ومستند." },
+            { q: "الحسابات الشخصية (Personal Accounts) تشمل:", options: ["السيارات والمباني", "الأشخاص الطبيعيين والمعنويين", "المصاريف والإيرادات", "النقدية"], answer: 1, reason: "[ص 42] تشمل الأفراد (طبيعيين) والشركات (معنويين) المتعاملين مع المشروع." },
+            { q: "الحسابات الحقيقية (Real Accounts) تمثل:", options: ["المصاريف", "ممتلكات وموجودات المشروع", "الديون", "المسحوبات"], answer: 1, reason: "[ص 43] تمثل الأصول الملموسة وغير الملموسة." },
+            { q: "الحسابات الاسمية (Nominal Accounts) سميت بذلك لأنها:", options: ["دائمة", "حسابات مؤقتة تقفل في نهاية الفترة", "تمثل أشخاصاً", "تمثل أصولاً ثابتة"], answer: 1, reason: "[ص 43] هي حسابات وسيطة للمصاريف والإيرادات تقفل في الأرباح والخسائر." },
+            { q: "دليل الحسابات (Chart of Accounts) هو:", options: ["قائمة بأسماء الموظفين", "قائمة بأسماء وأرقام الحسابات", "دفتر اليومية", "الميزانية العمومية"], answer: 1, reason: "[ص 45] وسيلة لترقيم وتصنيف الحسابات لتسهيل العمل (خاصة بالحاسوب)." },
+            { q: "المعادلة المحاسبية الأساسية هي:", options: ["الأصول = الخصوم - حقوق الملكية", "الأصول = الالتزامات + حقوق الملكية", "الأصول + المصاريف = الإيرادات", "الخصوم = الأصول + رأس المال"], answer: 1, reason: "[ص 47] الأصول (الجانب الأيمن) = الالتزامات + حقوق الملكية (الجانب الأيسر)." },
+            { q: "شراء سيارة نقداً يؤثر على المعادلة المحاسبية بـ:", options: ["زيادة أصل ونقص أصل آخر", "زيادة أصل وزيادة خصم", "نقص أصل ونقص خصم", "زيادة حقوق ملكية"], answer: 0, reason: "[ص 48] زيادة السيارات (أصل) ونقص النقدية (أصل)." },
+            { q: "سداد دين لمورد نقداً يؤدي إلى:", options: ["زيادة أصل وزيادة خصم", "نقص أصل ونقص التزام", "زيادة التزام ونقص أصل", "لا تأثير"], answer: 1, reason: "[ص 48] نقص النقدية (أصل) ونقص الدائنين (التزام)." },
+            { q: "زيادة رأس المال نقداً تؤدي إلى:", options: ["زيادة أصل وزيادة حقوق ملكية", "نقص أصل ونقص حقوق ملكية", "زيادة التزام", "نقص أصل وزيادة التزام"], answer: 0, reason: "[ص 53] زيادة النقدية (أصل) وزيادة رأس المال (حقوق ملكية)." },
+            { q: "في قاعدة المدين والدائن، الأصول والمصاريف تكون:", options: ["دائنة عند الزيادة", "مدينة عند الزيادة", "دائمة دائنة", "لا تتأثر"], answer: 1, reason: "[ص 57] الأصول والمصاريف طبيعتها مدينة، تزيد في المدين." },
+            { q: "الالتزامات والإيرادات في قاعدة المدين والدائن تكون:", options: ["مدينة عند الزيادة", "دائنة عند الزيادة", "مدينة دائماً", "صفرية"], answer: 1, reason: "[ص 57] طبيعتها دائنة، فتكون دائنة عند الزيادة ومدينة عند النقص." },
+
+            // --- الفصل الثالث ---
+            { q: "المصادر غير المباشرة للقيود (الأوراق الثبوتية) تشمل:", options: ["سند القيد", "الفاتورة والشيك", "دفتر اليومية", "ميزان المراجعة"], answer: 1, reason: "[ص 67] الفواتير والشيكات تعتبر وسائل إثبات (مصادر غير مباشرة)." },
+            { q: "الإشعار المدين (Debit Note) يرسل للعميل عندما:", options: ["نطالبه بمبلغ إضافي", "نخفض الدين عنه", "ندفع له نقداً", "نشتري منه بضاعة"], answer: 0, reason: "[ص 67] لإشعاره بأن مطالبة الشركة له قد زادت." },
+            { q: "الشيك هو أمر بالدفع يكون:", options: ["مؤجلاً", "مستحقاً بمجرد الاطلاع", "معلقاً على شرط", "خاصاً بالكمبيالات"], answer: 1, reason: "[ص 68] الشيك أداة وفاء تدفع بمجرد الاطلاع." },
+            { q: "الكمبيالة (Promissory Note) هي:", options: ["أمر من شخص لآخر", "تعهد كتابي بالدفع في تاريخ محدد", "شيك بنكي", "فاتورة بيع"], answer: 1, reason: "[ص 68] تعهد من شخص بدفع مبلغ معين في تاريخ استحقاق." },
+            { q: "المستند الذي يحرر عند دفع مبالغ نقدية هو:", options: ["مستند القبض", "مستند الصرف", "مستند القيد", "الفاتورة"], answer: 1, reason: "[ص 68] مستند الصرف (الدفع) يستخدم عند دفع الأموال." },
+            { q: "مستند القيد (Entry Voucher) يستخدم لـ:", options: ["العمليات النقدية", "العمليات على الحساب (التسويات)", "عمليات القبض فقط", "عمليات الصرف فقط"], answer: 1, reason: "[ص 69] يحرر عند حدوث عمليات غير نقدية (على الحساب)." },
+            { q: "أول خطوة في الدورة المحاسبية هي:", options: ["إعداد ميزان المراجعة", "إعداد المستند المؤيد للعملية", "الترحيل للأستاذ", "إقفال الحسابات"], answer: 1, reason: "[ص 69] الدورة تبدأ بوجود مستند يثبت العملية." },
+            { q: "نظام القيد المزدوج يعني أن لكل عملية:", options: ["طرف واحد", "طرفان متساويان (مدين ودائن)", "ثلاثة أطراف", "طرف دائن فقط"], answer: 1, reason: "[ص 71] كل عملية لها طرفان، أحدهما مدين والآخر دائن بنفس القيمة." },
+            { q: "القيد البسيط هو الذي يتضمن:", options: ["حساباً واحداً في كل طرف", "أكثر من حساب في المدين", "أكثر من حساب في الدائن", "مذكورين في الطرفين"], answer: 0, reason: "[ص 73] حساب واحد في المدين وحساب واحد في الدائن." },
+            { q: "عبارة 'من مذكورين' تستخدم في القيد:", options: ["البسيط", "المركب من الجانب المدين", "المركب من الجانب الدائن", "عند الدفع نقداً"], answer: 1, reason: "[ص 73] عندما يتضمن الجانب المدين أكثر من حساب." },
+            { q: "شراء بضاعة على الحساب يسجل بالقيد:", options: ["من المشتريات إلى النقدية", "من المشتريات إلى الدائنين", "من الدائنين إلى المشتريات", "من النقدية إلى المبيعات"], answer: 1, reason: "[ص 72] المشتريات (مدين) والدائنون (التزام دائن)." },
+            
+            // --- الفصل الرابع ---
+            { q: "من الدفاتر الإلزامية حسب القانون الأردني:", options: ["دفتر الأستاذ", "دفتر اليومية العام", "دفتر المسودة", "دفتر المبيعات"], answer: 1, reason: "[ص 93] المادة 16 ألزمت بمسك دفتر اليومية العام." },
+            { q: "يجب الاحتفاظ بالدفاتر التجارية قانونياً لمدة:", options: ["5 سنوات", "10 سنوات", "سنة واحدة", "15 سنة"], answer: 1, reason: "[ص 94] المادة 19 توجب الاحتفاظ بها لمدة عشر سنوات." },
+            { q: "دفتر الأستاذ العام يعتبر:", options: ["دفتراً إلزامياً", "دفتراً غير إلزامي لكنه ضروري للتبويب", "دفتر مسودة", "دفتر إحصائي"], answer: 1, reason: "[ص 95] غير إلزامي قانونياً لكنه أساسي لتبويب العمليات." },
+            { q: "الترحيل (Posting) هو عملية:", options: ["تسجيل في اليومية", "نقل القيود من اليومية إلى الأستاذ", "إعداد الميزانية", "جرد المخزون"], answer: 1, reason: "[ص 102] نقل المعلومات من اليومية إلى الحسابات المختصة في الأستاذ." },
+            { q: "الترصيد (Balancing) يعني:", options: ["إلغاء الحساب", "استخراج الفرق بين الجانب المدين والدائن", "فتح حساب جديد", "تسجيل قيد"], answer: 1, reason: "[ص 108] إيجاد حصيلة العملية (الفرق) لمعرفة رصيد الحساب." },
+            { q: "إذا كان مجموع الجانب المدين أكبر من الدائن، فالرصيد:", options: ["دائن", "مدين", "مقفل", "صفر"], answer: 1, reason: "[ص 108] الفرق يظهر في الجانب الدائن مكملاً، لكن طبيعته مدين." },
+            { q: "الحساب المقفل هو الذي:", options: ["يتساوى جانباه المدين والدائن", "رصيده مدين", "رصيده دائن", "لم تحدث فيه حركات"], answer: 0, reason: "[ص 109] لا يوجد فرق بين الجانبين، رصيده صفر." },
+            { q: "إعادة فتح الحسابات تعني:", options: ["شطب الحساب", "نقل الرصيد لبداية الفترة التالية", "تغيير اسم الحساب", "إغلاق الدفتر"], answer: 1, reason: "[ص 111] تدوير الرصيد ليكون رصيداً افتتاحياً للفترة القادمة." },
+            { q: "رقم صفحة الأستاذ يظهر في دفتر اليومية في خانة:", options: ["التاريخ", "البيان", "رقم صفحة الأستاذ", "رقم المستند"], answer: 2, reason: "[ص 97] لربط القيد بصفحة الحساب في دفتر الأستاذ (المراجعة)." },
+            { q: "عند إيداع رأس المال نقداً، يكون القيد:", options: ["من ح/ رأس المال إلى ح/ الصندوق", "من ح/ الصندوق إلى ح/ رأس المال", "من ح/ الصندوق إلى ح/ المبيعات", "لا يسجل قيد"], answer: 1, reason: "[ص 136] الصندوق أصل زاد (مدين)، ورأس المال حقوق ملكية زادت (دائن)." },
+            { q: "المسحوبات الشخصية تظهر في نهاية الفترة في:", options: ["قائمة الدخل", "تطرح من حقوق الملكية في الميزانية", "جانب الخصوم", "جانب الإيرادات"], answer: 1, reason: "[ص 144] المسحوبات تخفض حقوق المالكين." },
+            { q: "المصاريف الإيرادية هي التي:", options: ["تخدم أكثر من سنة", "تخدم السنة المالية الحالية فقط", "تضاف لتكلفة الأصل", "لا تسجل"], answer: 1, reason: "[ص 149] تساهم في تحقيق الإيراد في الأجل القصير (سنة واحدة)." },
+            { q: "تكلفة الآلة المشتراة تشمل:", options: ["الثمن فقط", "الثمن + مصاريف النقل والتركيب", "مصاريف الصيانة اللاحقة", "الثمن - الخصم فقط"], answer: 1, reason: "[ص 163] (مصاريف رأسمالية) كل ما ينفق عليها لتصبح جاهزة للعمل." },
+            { q: "نظام الجرد الدوري يتطلب:", options: ["جرداً فعلياً في نهاية الفترة لمعرفة المخزون", "تسجيلاً مستمراً للمخزون", "عدم استخدام ح/ المشتريات", "معرفة الرصيد لحظياً"], answer: 0, reason: "[ص 185] لا يمكن معرفة رصيد البضاعة إلا بالجرد الفعلي نهاية الفترة." },
+            { q: "مصاريف نقل المشتريات تسجل في دفاتر المشتري إذا كان الشرط:", options: ["التسليم محل البائع", "التسليم محل المشتري", "التسليم في مخازن المشتري", "مجاناً"], answer: 0, reason: "[ص 194] (FOB Shipping Point) المشتري يتحمل النقل من عند البائع." }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        const totalQuestions = questions.length;
+
+        // Elements
+        const questionEl = document.getElementById("question");
+        const optionsEl = document.getElementById("options");
+        const feedbackEl = document.getElementById("feedback");
+        const nextBtn = document.getElementById("next-btn");
+        const scoreEl = document.getElementById("score");
+        const totalEl = document.getElementById("total");
+        const progressEl = document.getElementById("progress");
+        const quizContent = document.getElementById("quiz-content");
+        const resultScreen = document.getElementById("result-screen");
+
+        totalEl.textContent = totalQuestions;
+
+        function loadQuestion() {
+            feedbackEl.style.display = "none";
+            nextBtn.style.display = "none";
+            optionsEl.innerHTML = "";
+            
+            const currentQ = questions[currentQuestionIndex];
+            questionEl.textContent = `${currentQuestionIndex + 1}. ${currentQ.q}`;
+
+            currentQ.options.forEach((opt, index) => {
+                const btn = document.createElement("button");
+                btn.className = "option-btn";
+                btn.textContent = opt;
+                btn.onclick = () => checkAnswer(index, btn);
+                optionsEl.appendChild(btn);
+            });
+
+            const progressPercent = ((currentQuestionIndex) / totalQuestions) * 100;
+            progressEl.style.width = `${progressPercent}%`;
+        }
+
+        function checkAnswer(selectedIndex, btnElement) {
+            const allBtns = optionsEl.children;
+            for(let btn of allBtns) {
+                btn.disabled = true;
+                btn.style.cursor = "default";
+            }
+
+            const currentQ = questions[currentQuestionIndex];
+            const isCorrect = selectedIndex === currentQ.answer;
+
+            feedbackEl.style.display = "block";
+
+            if (isCorrect) {
+                btnElement.classList.add("correct");
+                feedbackEl.style.backgroundColor = "#d1e7dd";
+                feedbackEl.style.color = "#0f5132";
+                feedbackEl.style.border = "1px solid #badbcc";
+                feedbackEl.innerHTML = `<strong>✔ إجابة صحيحة!</strong><div class="justification">${currentQ.reason}</div>`;
+                score++;
+                scoreEl.textContent = score;
+            } else {
+                btnElement.classList.add("incorrect");
+                allBtns[currentQ.answer].classList.add("correct");
+                feedbackEl.style.backgroundColor = "#f8d7da";
+                feedbackEl.style.color = "#842029";
+                feedbackEl.style.border = "1px solid #f5c2c7";
+                feedbackEl.innerHTML = `<strong>✘ إجابة خاطئة!</strong> الإجابة الصحيحة هي: ${currentQ.options[currentQ.answer]}<div class="justification">${currentQ.reason}</div>`;
+            }
+
+            nextBtn.style.display = "block";
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < totalQuestions) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            quizContent.style.display = "none";
+            resultScreen.style.display = "block";
+            document.getElementById("final-score").textContent = score;
+            
+            const msg = document.getElementById("message");
+            const percentage = (score / totalQuestions) * 100;
+            
+            progressEl.style.width = "100%";
+
+            if (percentage >= 90) msg.textContent = "أداء مذهل! أنت محاسب محترف.";
+            else if (percentage >= 75) msg.textContent = "جيد جداً! لديك فهم قوي للمادة.";
+            else if (percentage >= 50) msg.textContent = "جيد، لكن ينصح بمراجعة بعض النقاط.";
+            else msg.textContent = "تحتاج إلى المزيد من الدراسة والمراجعة.";
+        }
+
+        // Initialize
+        loadQuestion();
+
+    </script>
+</body>
+</html>
